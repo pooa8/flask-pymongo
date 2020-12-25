@@ -51,7 +51,7 @@ def lists():
     limit = request.args.get("limit", 7, type=int)
 
     search = request.args.get("search", -1, type=int)
-    keyword = request.args.get("keyword", type=str)
+    keyword = request.args.get("keyword", "", type=str)
 
     # 최종적으로 완성된 쿼리를 만들 변수
     query = {}
