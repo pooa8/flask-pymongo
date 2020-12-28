@@ -75,7 +75,7 @@ def lists():
     print(query)
 
     board = mongo.db.board
-    datas = board.find(query).skip((page-1) * limit).limit(limit)
+    datas = board.find(query).skip((page-1) * limit).limit(limit).sort("pubdate", -1)
 
     # 게시물의 총 개수
     tot_count = board.find(query).count()
