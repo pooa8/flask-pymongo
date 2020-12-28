@@ -113,7 +113,7 @@ def board_view(idx):
         keyword = request.args.get("keyword")
 
         board = mongo.db.board
-        data = board.find_one({"_id": ObjectId(idx)})
+        data = board.find_one_and_update({"_id": ObjectId(idx)}, {"$inc": {"view": 1}}, return_document=True)
 
         if data is not None:
             result = {
