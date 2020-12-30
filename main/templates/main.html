@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie-edge">
     <title>{{title}}</title>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.js"></script>
+    <!-- CDN은 이 서버에 직접 다운받은 것이 아니므로, 위 페이지가 느려질 경우 우리도 느려질 수 있다는 단점 -->
+    <script>
+        function validateEmail(email) {
+            var pattern = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i;
+            return pattern.test(email);
+    }
+    </script>
+    
     {% with messages = get_flashed_messages() %}
         {% if messages%}
             <script>
