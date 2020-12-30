@@ -1,12 +1,6 @@
-{% with messages = get_flashed_messages() %}
-    {% if messages%}
-        <script>
-            alert("{{messages[-1]}}")
-        </script>
-    {% endif %}
-{% endwith %}
-<html>
+{% extends 'main.html' %}
 
+{% block contents %}
 {{result.title}}
 <br>
 {{result.name}}
@@ -23,4 +17,4 @@
     <a href="{{url_for('board.board_delete', idx=result.id)}}">글삭제</a>
     <a href="{{url_for('board.board_edit', idx=result.id)}}">글수정</a>
 {% endif %}
-</html>
+{% endblock %}

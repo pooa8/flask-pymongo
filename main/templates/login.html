@@ -1,10 +1,6 @@
-{% with messages = get_flashed_messages() %}
-    {% if messages%}
-        <script>
-            alert("{{messages[-1]}}")
-        </script>
-    {% endif %}
-{% endwith %}
+{% extends 'main.html' %}
+
+{% block contents %}
 <table>
     <form name="form" action="{{url_for('member.member_login')}}" method="POST">
     {% if next_url %}
@@ -27,3 +23,4 @@
             </tr>
         </tbody>
 </table>
+{% endblock %}

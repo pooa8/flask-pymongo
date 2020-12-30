@@ -1,23 +1,23 @@
-<html>
-    <body>
-        <table>
-            <form name="form" method="POST" action="{{url_for('board.board_edit', idx=data._id)}}">
-            <tr>
-                <td>작성자</td>
-                <td><input type="text" name="name" value="{{session['name']}}" readonly></td>
-            </tr>
-            <tr>
-                <td>제목</td>
-                <td><input type="text" name="title" value={{data.title}}></td>
-            </tr>
-            <tr>
-                <td>내용</td>
-                <td><textarea name="contents">{{data.contents}}</textarea></td>
-            </tr>
-            <tr>
-                <td colspan="2"><input type="submit"></td> 
-            </tr>
-            </form>
-        </table>
-    </body>
-</html>
+{% extends 'main.html' %}
+
+{% block contents %}
+<table>
+    <form name="form" method="POST" action="{{url_for('board.board_edit', idx=data._id)}}">
+    <tr>
+        <td>작성자</td>
+        <td><input type="text" name="name" value="{{session['name']}}" readonly></td>
+    </tr>
+    <tr>
+        <td>제목</td>
+        <td><input type="text" name="title" value={{data.title}}></td>
+    </tr>
+    <tr>
+        <td>내용</td>
+        <td><textarea name="contents">{{data.contents}}</textarea></td>
+    </tr>
+    <tr>
+        <td colspan="2"><input type="submit"></td> 
+    </tr>
+    </form>
+</table>
+{% endblock %}
