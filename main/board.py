@@ -94,7 +94,7 @@ def board_view(idx):
 @login_required
 def board_write():
     if session.get("id") is None:  # 사용자 정보 없는 경우 로그인 페이지로 redirection
-        return redirect(url_for("board.member_login"))
+        return redirect(url_for("member.member_login"))
 
     if request.method == "POST":
         name = request.form.get("name")

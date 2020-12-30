@@ -3,7 +3,7 @@ from flask import Blueprint
 
 blueprint = Blueprint("member", __name__, url_prefix="/member")
 
-@app.route("/join", methods=["GET", "POST"])
+@blueprint.route("/join", methods=["GET", "POST"])
 def member_join():
     if request.method == "POST":
         name = request.form.get("name", type=str)
@@ -42,7 +42,7 @@ def member_join():
         return render_template("join.html")
 
 
-@app.route("/login", methods=["GET", "POST"])
+@blueprint.route("/login", methods=["GET", "POST"])
 def member_login():
     if request.method == "POST":
         email = request.form.get("email")
