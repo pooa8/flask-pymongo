@@ -12,7 +12,7 @@
             <td class="text-right">{{result.pubdate|formatdatetime}}</td>
         </tr>
         <tr>
-            <td colspan="2"><div style="min-height:200px;">{{result.contents}}</div></td>
+            <td colspan="2"><div style="min-height:200px;">{% autoescape false %}{{result.contents}}{% endautoescape %}</div></td>
         </tr>
     </tbody>
 </table>

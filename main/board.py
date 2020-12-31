@@ -1,7 +1,24 @@
 from main import *
 from flask import Blueprint
+from flask import send_from_directory
 
 blueprint = Blueprint("board", __name__, url_prefix="/board")
+
+
+@blueprint.route("/upload_image", methods=["POST"])
+def upload_image():
+    if request.method == "POST":
+        file = request.files["image"]
+        if file and allowed_file(file.filename):
+            filename = "{}.jpg".format(rand_generator())
+            savefilepath = os.path.join(app.config["BOARD_IMAGE_PATH"], filename)
+            file.save(savefilepath)
+            return url_for("board.board_images", filename=filename)
+
+
+@blueprint.route("/images/<filename>")
+def board_images(filename):
+    return send_from_directory(app.config["BOARD_IMAGE_PATH"], filename)
 
 @blueprint.route("/list")
 def lists():
