@@ -11,6 +11,12 @@
             <td>{{result.name}}</td>
             <td class="text-right">{{result.pubdate|formatdatetime}}</td>
         </tr>
+        {% if result.attachfile %}
+        <tr>
+            <td>첨부파일</td>
+            <td><a href = "{{url_for('board.board_files', filename=result.attachfile)}}">{{result.attachfile}}</a></td>
+        </tr>
+        {% endif %}
         <tr>
             <td colspan="2"><div style="min-height:200px;">{% autoescape false %}{{result.contents}}{% endautoescape %}</div></td>
         </tr>

@@ -2,33 +2,86 @@
 
 {% block contents %}
 <script>
+    $(document).ready(function() {
+        $("#summernote").summernote({
+            height: 300,
+            minHeight: null,
+            maxHeight: null,
+            lang: "ko-KR",
+            popover: {
+                image: [],
+                link: [],
+                air: []
+            },
+            callbacks: {
+                onImageUpload: function(image) {
+                    for(var i = 0; i < image.length; i++) {
+                        uploadImage(image[i]);
+                    }
+                }
+            }
+        });
+    });
+
+    function uploadImage(image) {
+        var data = new FormData();
+        data.append("image", image);
+        $.ajax({
+            url: "{{url_for('board.upload_image')}}",
+            cache: false,
+            contentType: false, // multipart/form-data
+            processData: false, // QueryString 형태가 아님 (ex. a=10&b=20)
+            data: data,
+            type: "post",
+            success: function(url) {
+                var image = $("<img>").attr("src", url).css('max-width',"900px");
+                $("#summernote").summernote("insertNode", image[0]);
+            },
+            error: function(data){
+                console.log(data);
+                alert(data);
+            }
+        });
+    }
+</script>
+<script>
     function checkForm() {
         if ($.trim($("#title").val()) == "") {
             alert("제목을 입력하세요.");
             $("#title").focus();
             return false;
         }
-        if ($.trim($("#contents").val()) == "") {
+        if ($.trim($("#summernote").val()) == "") {
             alert("내용을 입력하세요.");
-            $("#contents").focus();
+            $("#summernote").focus();
             return false;
         }
         return true;
     }
 </script>
 
-<form name="form" method="POST" action="{{url_for('board.board_edit', idx=data._id)}}" onsubmit="return checkForm()">
+<form name="form" method="POST" action="{{url_for('board.board_edit', idx=data._id)}}" onsubmit="return checkForm()" enctype="multipart/form-data">
     <div class="form-group">
         <label for="name">작성자</label>
-        <input type="text" name="name" value="{{session['name']}}" readonly>
+        <input class="form-control" type="text" name="name" value="{{session['name']}}" readonly>
     </div>
     <div class="form-group">
         <label for="title">제목</label>
-        <input type="text" name="title" value={{data.title}} id="title">
+        <input class="form-control" type="text" name="title" value={{data.title}} id="title">
     </div>
+    {% if data.attachfile %}
+    <div class="form-check text-right">
+        <input type="checkbox" class="form-check-input" id="deleteoldfile" name="deleteoldfile">
+        <label class="form-check-label" for="deleteoldfile">첨부파일 삭제 ({{data.attachfile}})</label>
+    </div>
+    {% endif %}
     <div class="form-group">
         <label for="contents">내용</label>
-            <textarea rows="8" class="form-control" name="contents" id="contents">{{data.contents}}</textarea>
+            <textarea rows="8" class="form-control" name="contents" id="summernote">{{data.contents}}</textarea>
+    </div>
+    <div class="custom-file">
+        <input class="custom-file-input" id="custonFile" type="file" name="attachfile">
+        <label class="custom-file-label" for="customFile">파일선택</label>
     </div>
     <div class="text-center"><input class="btn btn-primary" type="submit" value="수정하기"></div>
 </form>
