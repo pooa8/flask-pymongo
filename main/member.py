@@ -58,6 +58,11 @@ def member_login():
             return redirect(url_for("member.member_login"))
         else:
             if check_password(data.get("pass"), password):
+                current_utc_time = round(datetime.utcnow().timestamp() * 1000)
+                members.update_one({"email": email}, {
+                    "$set": {"logintime": current_utc_time},
+                    "$inc": {"logincount": 1}
+                })
                 session["email"] = email
                 session["name"] = data.get("name")
                 session["id"] = str(data.get("_id"))
