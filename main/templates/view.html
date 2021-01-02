@@ -7,6 +7,77 @@
         get_comment_list();
     });
     
+    function deleteComment(idx) {
+        $.ajax({
+            url: "{{url_for('board.comment_delete')}}",
+            type: "POST",
+            cache: false,
+            data: {
+                "id": idx,
+                "csrf_token": "{{csrf_token()}}"
+            },
+            success: function(data) {
+                if (data["error"] == "success") {
+                    get_comment_list();
+                    alert("삭제되었습니다.");
+                }
+            },
+            error: function(request, status, error) {
+                var msg = "Error : " + request.status + "<br>";
+                msg += "내용: " + request.responseText + "<br>" + error;
+                console.log(msg);
+            }
+        })
+    }
+
+    // 댓글 수정 완료 기능 구현
+    function editCommentOk(idx) {
+        var new_comment = $("#i" + idx).val();
+        $.ajax({
+            url: "{{url_for('board.comment_edit')}}",
+            type: "POST",
+            cache: false,
+            data: {
+                "id": idx,
+                "csrf_token": "{{csrf_token()}}",
+                "comment": new_comment
+            },
+            success: function(data) {
+                if (data["error"] == "success") {
+                    get_comment_list();
+                    alert("수정 완료되었습니다.");
+                }
+            },
+            error: function(request, status, error) {
+                var msg = "Error : " + request.status + "<br>";
+                msg += "내용: " + request.responseText + "<br>" + error;
+                console.log(msg);
+            }
+        })
+    }
+
+    // 댓글 수정 취소 기능 구현
+    function cancelEdit(idx) {
+        var html = "";
+        var comment = $("#t" + idx).data("comment");
+        html += comment;
+        html += "<a href='#' onclick='deleteComment(\"" + idx + "\")'> 삭제</a>";
+        html += " | <a href='#' onclick='editComment(\"" + idx + "\")'>수정</a>";
+        $("#t" + idx).html(html);
+    }
+
+    // 댓글 수정 선택 시 나타나는 field 구현
+    function editComment(idx) {
+        var html = "";
+        var comment = $("#t" + idx).data("comment");
+        html += "<textarea row='3' cols='110' id='i" + idx + "'>" + comment;
+        html += "</textarea>";
+        html += "<a href='#' onclick='editCommentOk(\"" + idx + "\")'>저장</a>";
+        html += " | "
+        html += "<a href='#' onclick='cancelEdit(\"" + idx + "\")'>취소</a>";
+        $("#t" + idx).html(html);
+    }
+
     function addComment() {
         $.ajax({
             url: "{{url_for('board.comment_write')}}",
@@ -38,7 +109,12 @@
                         html += "<table class='table'>";
                         html += "<tr>";
                         html += "<td width='100'><h6>" + c[i].name + "</h6></td>";
-                        html += "<td>" + c[i].comment + "</td>";
+                        html += "<td id='t" + c[i].id + "' data-comment='" + c[i].comment + "'>" + c[i].comment;
+                        if (c[i].owner) {
+                            html += "<a href='#' onclick='deleteComment(\"" + c[i].id + "\")'> 삭제</a>";
+                            html += " | <a href='#' onclick='editComment(\"" + c[i].id + "\")'>수정</a>";
+                        }
+                        html += "</td>";
                         html += "<td class='text-right' width='200'>" + c[i].pubdate + "</td>";
                         html += "</tr>";
                         html += "</table>";

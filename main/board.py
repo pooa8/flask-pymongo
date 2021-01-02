@@ -13,8 +13,41 @@ def board_delete_attach_file(filename):
     return False
 
 
+@blueprint.route("/comment_edit", methods=["POST"])
+def comment_edit():
+    if request.method == "POST":
+        idx = request.form.get("id")
+        comment = request.form.get("comment")
+
+        c_comment = mongo.db.comment
+        data = c_comment.find_one({"_id": ObjectId(idx)})
+        if data.get("writer_id") == session.get("id"):
+            c_comment.update_one(
+                {"_id": ObjectId(idx)},
+                {"$set": {"comment": comment}},
+            )
+            return jsonify(error="success")
+        else:
+            return jsonify(error="error")
+
+
+@blueprint.route("/comment_delete", methods=["POST"])
+@login_required
+def comment_delete():
+    if request.method == "POST":
+        idx = request.form.get("id")
+        comment = mongo.db.comment
+        data = comment.find_one({"_id": ObjectId(idx)})
+        if data.get("writer_id") == session.get("id"):
+            comment.delete_one({"_id": ObjectId(idx)})
+            return jsonify(error="success")
+        else:
+            return jsonify(error="error")
+    return abort(401)
+
+
 @blueprint.route("/comment_list/<root_idx>", methods=["GET"])
-#@login_required
+@login_required
 def comment_list(root_idx):
     comment = mongo.db.comment
     # collection.find({}) 의 결과는 pymongo.cursor.Cursor 형태
@@ -22,13 +55,15 @@ def comment_list(root_idx):
 
     comment_list = []
     for c in comments:
+        owner = True if c.get("writer_id") == session.get("id") else False
         comment_list.append({
             "id": str(c.get("_id")),
             "root_idx": c.get("root_idx"),
             "name": c.get("name"),
             "writer_id": c.get("writer_id"),
             "comment": c.get("comment"),
-            "pubdate": format_datetime(c.get("pubdate"))
+            "pubdate": format_datetime(c.get("pubdate")),
+            "owner": owner
         })
     return jsonify(error="success", lists=comment_list)
 
