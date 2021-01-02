@@ -2,6 +2,61 @@
 
 {% block contents %}
 
+<script>
+    $(document).ready(function() {
+        get_comment_list();
+    });
+    
+    function addComment() {
+        $.ajax({
+            url: "{{url_for('board.comment_write')}}",
+            type: "POST",
+            data: $("#commentForm").serialize(), //serialize : 전송하기 좋은 형태로 변경해줌
+            success: function(data) {
+                $("comment").val("");
+                get_comment_list();
+            } ,
+            error: function(request, status, error) {
+                var msg = "Error : " + request.status + "<br>";
+                msg += "내용: " + request.responseText + "<br>" + error;
+                console.log(msg);
+            }
+        });
+    }
+    function get_comment_list() {
+        $.ajax({
+            url: "{{url_for('board.comment_list', root_idx=result.id)}}",
+            type: "GET",
+            cache: false,
+            dataType: "json",
+            success: function(data) {
+                c = data.lists;
+                html = "";
+                if (c.length > 0) {
+                    for(var i = 0; i < c.length; i++) {
+                        html += "<div>";
+                        html += "<table class='table'>";
+                        html += "<tr>";
+                        html += "<td width='100'><h6>" + c[i].name + "</h6></td>";
+                        html += "<td>" + c[i].comment + "</td>";
+                        html += "<td class='text-right' width='200'>" + c[i].pubdate + "</td>";
+                        html += "</tr>";
+                        html += "</table>";
+                        html += "</div>";
+                    }
+                }
+                $("#cCnt").html(c.length);
+                $("#commentList").html(html);
+            },
+            error: function(request, status, error) {
+                var msg = "Error : " + request.status + "<br>";
+                msg += "내용: " + request.responseText + "<br>" + error;
+                console.log(msg);
+            }
+        })
+    }
+</script>
+
 <table class="table table-borderes">
     <tbody>
         <tr>
@@ -35,27 +90,15 @@
     <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
     <input type="hidden" name="root_idx" value="{{result.id}}">
     <div>
-        <span><string>댓글</strong></span><span id="cCnt"></span>
+        <span><string>댓글</strong></span> <span id="cCnt"></span>
         <table class="table">
             <tr>
                 <td><textarea rows="3" cols="110" id="comment" name="comment" placeholder="댓글을 입력하세요."></textarea></td>
-                <td><input type="submit" class="btn btn-success" style="height:80px;" value="등록하기"></td>
+                <td><input type="button" class="btn btn-success" style="height:80px;" onclick="addComment()"  value="등록하기"></td>
             </tr>
         </table>
     </div>
 </form>
 
-{% if comments.count() > 0 %}
-    {% for c in comments %}
-        <div>
-            <table class="table">
-                <tr>
-                    <td width="100"<h6>{{c.name}}</h6></td>
-                    <td>{{c.comment}}</td>
-                    <td class="text-right" width="200">{{c.pubdate | formatdatetime}}</td>
-                </tr>
-            </table>
-        </div>
-    {% endfor %}
-{% endif %}
+<div id="commentList"></div>
 {% endblock %}

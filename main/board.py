@@ -13,6 +13,26 @@ def board_delete_attach_file(filename):
     return False
 
 
+@blueprint.route("/comment_list/<root_idx>", methods=["GET"])
+#@login_required
+def comment_list(root_idx):
+    comment = mongo.db.comment
+    # collection.find({}) 의 결과는 pymongo.cursor.Cursor 형태
+    comments = comment.find({"root_idx": str(root_idx)}).sort([("pubdate", -1)])
+
+    comment_list = []
+    for c in comments:
+        comment_list.append({
+            "id": str(c.get("_id")),
+            "root_idx": c.get("root_idx"),
+            "name": c.get("name"),
+            "writer_id": c.get("writer_id"),
+            "comment": c.get("comment"),
+            "pubdate": format_datetime(c.get("pubdate"))
+        })
+    return jsonify(error="success", lists=comment_list)
+
+
 @blueprint.route("/comment_write", methods=["POST"])
 @login_required
 def comment_write():
@@ -145,10 +165,8 @@ def board_view(idx):
                 "attachfile": data.get("attachfile", "")
             }
 
-            comment = mongo.db.comment
-            comments = comment.find({"root_idx": str(data.get("_id"))})
-            return render_template("view.html", result=result, comments=comments, page=page, search=search, keyword=keyword, title="글 상세보기")
-    return abort(404)
+            return render_template("view.html", result=result, page=page, search=search, keyword=keyword, title="글 상세보기")
+    return abort(400)
 
 
 @blueprint.route("/write", methods=["GET", "POST"])
