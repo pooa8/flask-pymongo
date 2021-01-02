@@ -29,4 +29,33 @@
     <a class="btn btn-danger float-right ml-2" href="{{url_for('board.board_delete', idx=result.id)}}">글삭제</a>
     <a class="btn btn-warning float-right ml-2" href="{{url_for('board.board_edit', idx=result.id)}}">글수정</a>
 {% endif %}
+<br>
+<br>
+<form id="commentForm" name="commentForm" action="{{url_for('board.comment_write')}}" method="POST">
+    <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+    <input type="hidden" name="root_idx" value="{{result.id}}">
+    <div>
+        <span><string>댓글</strong></span><span id="cCnt"></span>
+        <table class="table">
+            <tr>
+                <td><textarea rows="3" cols="110" id="comment" name="comment" placeholder="댓글을 입력하세요."></textarea></td>
+                <td><input type="submit" class="btn btn-success" style="height:80px;" value="등록하기"></td>
+            </tr>
+        </table>
+    </div>
+</form>
+
+{% if comments.count() > 0 %}
+    {% for c in comments %}
+        <div>
+            <table class="table">
+                <tr>
+                    <td width="100"<h6>{{c.name}}</h6></td>
+                    <td>{{c.comment}}</td>
+                    <td class="text-right" width="200">{{c.pubdate | formatdatetime}}</td>
+                </tr>
+            </table>
+        </div>
+    {% endfor %}
+{% endif %}
 {% endblock %}
