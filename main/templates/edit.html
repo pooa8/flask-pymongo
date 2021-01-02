@@ -26,6 +26,16 @@
     function uploadImage(image) {
         var data = new FormData();
         data.append("image", image);
+        var csrf_token = "{{csrf_token()}}"
+
+        $.ajaxSetup({
+            beforeSend: function(x, s) {
+                if(!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(s.type)) { // setting type이 GET/HEAD/OPTIONS/TRACE 이면
+                    x.setRequestHeader("X-CSRFToken", csrf_token) // ajax 내부통신객체에 헤더 추가
+                }
+            }
+        });
+
         $.ajax({
             url: "{{url_for('board.upload_image')}}",
             cache: false,
@@ -61,6 +71,7 @@
 </script>
 
 <form name="form" method="POST" action="{{url_for('board.board_edit', idx=data._id)}}" onsubmit="return checkForm()" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
     <div class="form-group">
         <label for="name">작성자</label>
         <input class="form-control" type="text" name="name" value="{{session['name']}}" readonly>

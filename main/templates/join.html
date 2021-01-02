@@ -38,6 +38,7 @@
 </script>
 
 <form name="form" action="{{url_for('member.member_join')}}" method="POST" onsubmit="return checkForm()">
+    <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
     <div class="form-group">
         <label for="name">이름</label>
         <input class="form-control" type="text" name="name" id="name">

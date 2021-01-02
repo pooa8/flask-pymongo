@@ -4,6 +4,15 @@ from string import digits, ascii_uppercase, ascii_lowercase
 import random
 import re # 정규식을 위한
 import os
+from werkzeug.security import generate_password_hash, check_password_hash
+
+
+def hash_password(password):
+    return generate_password_hash(password)
+
+
+def check_password(hashed_password, user_password):
+    return check_password_hash(hashed_password, user_password)
 
 
 def check_filename(filename):

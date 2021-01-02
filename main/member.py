@@ -3,6 +3,7 @@ from flask import Blueprint
 
 blueprint = Blueprint("member", __name__, url_prefix="/member")
 
+# @csrf.exempt 데코레이터 사용으로 아래 함수 csrf 예외처리 가능
 @blueprint.route("/join", methods=["GET", "POST"])
 def member_join():
     if request.method == "POST":
@@ -29,7 +30,7 @@ def member_join():
         post = {
             "name": name,
             "email": email,
-            "pass": pass1,
+            "pass": hash_password(pass1),
             "joindate": current_utc_time,
             "logintime": "",
             "logincount": 0,
@@ -37,7 +38,7 @@ def member_join():
 
         members.insert_one(post)
 
-        return ""
+        return redirect(url_for("lists"))
     else:
         return render_template("join.html", title="회원가입")
 
@@ -56,7 +57,7 @@ def member_login():
             flash("회원 정보가 없습니다.")
             return redirect(url_for("member.member_login"))
         else:
-            if data.get("pass") == password:
+            if check_password(data.get("pass"), password):
                 session["email"] = email
                 session["name"] = data.get("name")
                 session["id"] = str(data.get("_id"))
